@@ -7,11 +7,12 @@
 """Convert XYZ Structure to internal coordinates and back, test result."""
 
 import re
+import numpy as np
 
 from itertools import zip_longest
 
 try:
-    import numpy as np
+    import numpy
 except ImportError:
     from Bio import MissingPythonDependencyError
 
@@ -252,13 +253,13 @@ def _cmp_atm(
             )
         ac_rslt = False
         if rtol is None and atol is None:
-            a0c = np.round(a0.get_coord(), 3)
-            a1c = np.round(a1.get_coord(), 3)
-            ac_rslt = np.array_equal(a0c, a1c)
+            a0c = numpy.round(a0.get_coord(), 3)
+            a1c = numpy.round(a1.get_coord(), 3)
+            ac_rslt = numpy.array_equal(a0c, a1c)
         else:
             a0c = a0.get_coord()
             a1c = a1.get_coord()
-            ac_rslt = np.allclose(a0c, a1c, rtol=rtol, atol=atol)
+            ac_rslt = numpy.allclose(a0c, a1c, rtol=rtol, atol=atol)
 
         if ac_rslt:
             cmpdict["aCoordMatchCount"] += 1
@@ -366,7 +367,7 @@ def compare_residues(
     :param bool quick: default False.
         Only check atomArrays are identical, aCoordMatchCount=0 if different
     :param float rtol, atol: default 1e-03, 1e-03 or round to 3 places.
-        NumPy allclose parameters; default is to round atom coordinates to 3
+        Numpy allclose parameters; default is to round atom coordinates to 3
         places and test equal.  For 'quick' will use defaults above for
         comparing atomArrays
     :returns dict:
@@ -395,15 +396,15 @@ def compare_residues(
                 e0.internal_coord.atomArray is not None
                 and np.shape(e0.internal_coord.atomArray)
                 == np.shape(e1.internal_coord.atomArray)
-                and np.allclose(
+                and numpy.allclose(
                     e0.internal_coord.atomArray,
                     e1.internal_coord.atomArray,
                     rtol=1e-03 if rtol is None else rtol,
                     atol=1e-03 if atol is None else atol,
                 )
             ):
-                cmpdict["aCount"] = np.size(e0.internal_coord.atomArray, 0)
-                cmpdict["aCoordMatchCount"] = np.size(e0.internal_coord.atomArray, 0)
+                cmpdict["aCount"] = numpy.size(e0.internal_coord.atomArray, 0)
+                cmpdict["aCoordMatchCount"] = numpy.size(e0.internal_coord.atomArray, 0)
                 if cmpdict["aCoordMatchCount"] > 0:
                     cmpdict["pass"] = True
                 else:
@@ -412,25 +413,25 @@ def compare_residues(
                 cmpdict["aCount"] = (
                     0
                     if e0.internal_coord.atomArray is None
-                    else np.size(e0.internal_coord.atomArray, 0)
+                    else numpy.size(e0.internal_coord.atomArray, 0)
                 )
                 cmpdict["pass"] = False
         else:
             cmpdict["pass"] = True
             for c0, c1 in zip_longest(e0.get_chains(), e1.get_chains()):
                 if c0.internal_coord.atomArray is not None:
-                    if np.allclose(
+                    if numpy.allclose(
                         c0.internal_coord.atomArray,
                         c1.internal_coord.atomArray,
                         rtol=1e-03 if rtol is None else rtol,
                         atol=1e-03 if atol is None else atol,
                     ):
-                        cmpdict["aCoordMatchCount"] += np.size(
+                        cmpdict["aCoordMatchCount"] += numpy.size(
                             c0.internal_coord.atomArray, 0
                         )
                     else:
                         cmpdict["pass"] = False
-                    cmpdict["aCount"] += np.size(c0.internal_coord.atomArray, 0)
+                    cmpdict["aCount"] += numpy.size(c0.internal_coord.atomArray, 0)
             if cmpdict["aCoordMatchCount"] < cmpdict["aCount"]:
                 cmpdict["pass"] = False
 

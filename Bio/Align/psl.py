@@ -26,7 +26,7 @@ zero-based end position. We can therefore manipulate ``start`` and
 ``start + size`` as python list slice boundaries.
 """
 from itertools import chain
-import numpy as np
+import numpy
 
 
 from Bio.Align import Alignment
@@ -75,7 +75,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
         self.wildcard = wildcard
         self.mask = mask
 
-    def write_header(self, stream, alignments):
+    def write_header(self, alignments):
         """Write the PSL header."""
         if not self.header:
             return
@@ -86,7 +86,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
         else:
             version = metadata.get("psLayout version", "3")
         # fmt: off
-        stream.write(
+        self.stream.write(
             f"""\
 psLayout version {version}
 
@@ -361,9 +361,9 @@ class AlignmentIterator(interfaces.AlignmentIterator):
                     "Inconsistent number of target start positions (%d found, expected %d)"
                     % (len(tStarts), blockCount)
                 )
-            qStarts = np.array(qStarts)
-            tStarts = np.array(tStarts)
-            qBlockSizes = np.array(blockSizes)
+            qStarts = numpy.array(qStarts)
+            tStarts = numpy.array(tStarts)
+            qBlockSizes = numpy.array(blockSizes)
             if strand in ("++", "+-"):
                 # protein sequence aligned against translated DNA sequence
                 tBlockSizes = 3 * qBlockSizes
@@ -384,7 +384,7 @@ class AlignmentIterator(interfaces.AlignmentIterator):
                 tPosition += tBlockSize
                 qPosition += qBlockSize
                 coordinates.append([tPosition, qPosition])
-            coordinates = np.array(coordinates).transpose()
+            coordinates = numpy.array(coordinates).transpose()
             qNumInsert = 0
             qBaseInsert = 0
             tNumInsert = 0

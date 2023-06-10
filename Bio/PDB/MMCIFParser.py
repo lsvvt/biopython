@@ -6,7 +6,7 @@
 """mmCIF parsers."""
 
 
-import numpy as np
+import numpy
 import warnings
 
 from Bio.File import as_handle
@@ -215,7 +215,8 @@ class MMCIFParser:
             except ValueError:
                 serial = atom_serial_list[i]
                 warnings.warn(
-                    "PDBConstructionWarning: Some atom serial numbers are not numerical",
+                    "PDBConstructionWarning: "
+                    "Some atom serial numbers are not numerical",
                     PDBConstructionWarning,
                 )
 
@@ -238,7 +239,8 @@ class MMCIFParser:
                 except (KeyError, IndexError):
                     msg = f"Non-existing residue ID in chain '{chainid}'"
                 warnings.warn(
-                    "PDBConstructionWarning: " + msg,
+                    "PDBConstructionWarning: ",
+                    msg,
                     PDBConstructionWarning,
                 )
                 continue
@@ -293,7 +295,7 @@ class MMCIFParser:
                 current_resname = resname
                 structure_builder.init_residue(resname, hetatm_flag, int_resseq, icode)
 
-            coord = np.array((x, y, z), "f")
+            coord = numpy.array((x, y, z), "f")
             element = element_list[i].upper() if element_list else None
             structure_builder.init_atom(
                 name,
@@ -315,7 +317,7 @@ class MMCIFParser:
                     aniso_u33[i],
                 )
                 mapped_anisou = [float(_) for _ in u]
-                anisou_array = np.array(mapped_anisou, "f")
+                anisou_array = numpy.array(mapped_anisou, "f")
                 structure_builder.set_anisou(anisou_array)
         # Now try to set the cell
         try:
@@ -325,7 +327,7 @@ class MMCIFParser:
             alpha = float(mmcif_dict["_cell.angle_alpha"][0])
             beta = float(mmcif_dict["_cell.angle_beta"][0])
             gamma = float(mmcif_dict["_cell.angle_gamma"][0])
-            cell = np.array((a, b, c, alpha, beta, gamma), "f")
+            cell = numpy.array((a, b, c, alpha, beta, gamma), "f")
             spacegroup = mmcif_dict["_symmetry.space_group_name_H-M"][0]
             spacegroup = spacegroup[1:-1]  # get rid of quotes!!
             if spacegroup is None:
@@ -528,7 +530,8 @@ class FastMMCIFParser:
                 except (KeyError, IndexError):
                     msg = f"Non-existing residue ID in chain '{chainid}'"
                 warnings.warn(
-                    "PDBConstructionWarning: " + msg,
+                    "PDBConstructionWarning: ",
+                    msg,
                     PDBConstructionWarning,
                 )
                 continue
@@ -584,7 +587,7 @@ class FastMMCIFParser:
                 current_resname = resname
                 structure_builder.init_residue(resname, hetatm_flag, int_resseq, icode)
 
-            coord = np.array((x, y, z), "f")
+            coord = numpy.array((x, y, z), "f")
             element = element_list[i] if element_list else None
             structure_builder.init_atom(
                 name,
@@ -606,5 +609,5 @@ class FastMMCIFParser:
                     aniso_u33[i],
                 )
                 mapped_anisou = [float(_) for _ in u]
-                anisou_array = np.array(mapped_anisou, "f")
+                anisou_array = numpy.array(mapped_anisou, "f")
                 structure_builder.set_anisou(anisou_array)

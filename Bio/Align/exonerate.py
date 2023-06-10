@@ -26,7 +26,7 @@ unparsable file.
 
 You are expected to use this module via the Bio.Align functions.
 """
-import numpy as np
+import numpy
 
 
 from Bio.Align import Alignment
@@ -62,7 +62,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
                 "argument fmt should be 'vulgar' or 'cigar' (received %s)" % fmt
             )
 
-    def write_header(self, stream, alignments):
+    def write_header(self, alignments):
         """Write the header."""
         try:
             metadata = alignments.metadata
@@ -72,12 +72,12 @@ class AlignmentWriter(interfaces.AlignmentWriter):
         else:
             commandline = metadata.get("Command line", "")
             hostname = metadata.get("Hostname", "")
-        stream.write(f"Command line: [{commandline}]\n")
-        stream.write(f"Hostname: [{hostname}]\n")
+        self.stream.write(f"Command line: [{commandline}]\n")
+        self.stream.write(f"Hostname: [{hostname}]\n")
 
-    def write_footer(self, stream):
+    def write_footer(self):
         """Write the footer."""
-        stream.write("-- completed exonerate analysis\n")
+        self.stream.write("-- completed exonerate analysis\n")
 
     def _format_alignment_cigar(self, alignment):
         """Return a string with a single alignment formatted as a cigar line."""
@@ -88,7 +88,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
         target_end = coordinates[0, -1]
         query_start = coordinates[1, 0]
         query_end = coordinates[1, -1]
-        steps = np.diff(coordinates)
+        steps = numpy.diff(coordinates)
         query = alignment.query
         target = alignment.target
         try:
@@ -280,7 +280,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
         target_end = coordinates[0, -1]
         query_start = coordinates[1, 0]
         query_end = coordinates[1, -1]
-        steps = np.diff(coordinates)
+        steps = numpy.diff(coordinates)
         query = alignment.query
         target = alignment.target
         try:
@@ -463,7 +463,7 @@ class AlignmentIterator(interfaces.AlignmentIterator):
         qs = 0
         ts = 0
         n = (len(words) - 8) // 2
-        coordinates = np.empty((2, n + 1), int)
+        coordinates = numpy.empty((2, n + 1), int)
         coordinates[0, 0] = ts
         coordinates[1, 0] = qs
         for i, (operation, step) in enumerate(zip(words[9::2], words[10::2])):
@@ -528,7 +528,7 @@ class AlignmentIterator(interfaces.AlignmentIterator):
         qs = 0
         ts = 0
         n = (len(words) - 8) // 3 + ops.count("N")
-        coordinates = np.empty((2, n + 1), int)
+        coordinates = numpy.empty((2, n + 1), int)
         coordinates[0, 0] = ts
         coordinates[1, 0] = qs
         operations = bytearray(n)

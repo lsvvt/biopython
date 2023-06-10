@@ -25,12 +25,12 @@ from itertools import chain
 import copy
 
 try:
-    import numpy as np
+    import numpy
 except ImportError:
     from Bio import MissingPythonDependencyError
 
     raise MissingPythonDependencyError(
-        "Please install NumPy if you want to use Bio.Align. "
+        "Please install numpy if you want to use Bio.Align. "
         "See http://www.numpy.org/"
     ) from None
 
@@ -57,7 +57,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
         super().__init__(target)
         self.md = md
 
-    def write_header(self, stream, alignments):
+    def write_header(self, alignments):
         """Write the SAM header."""
         try:
             metadata = alignments.metadata
@@ -76,7 +76,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
                     continue
                 fields.append("%s:%s" % (key, value))
             line = "\t".join(fields) + "\n"
-            stream.write(line)
+            self.stream.write(line)
         for record in targets:
             fields = ["@SQ"]
             fields.append("SN:%s" % record.id)
@@ -108,7 +108,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
                 if description != "<unknown description>":
                     fields.append("DS:%s" % description)
             line = "\t".join(fields) + "\n"
-            stream.write(line)
+            self.stream.write(line)
         for tag, rows in metadata.items():
             if tag == "HD":  # already written
                 continue
@@ -117,7 +117,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
                 for key, value in row.items():
                     fields.append("%s:%s" % (key, value))
                 line = "\t".join(fields) + "\n"
-                stream.write(line)
+                self.stream.write(line)
 
     def format_alignment(self, alignment, md=None):
         """Return a string with a single alignment formatted as one SAM line."""
@@ -158,7 +158,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
         else:  # mapped to reverse strand
             flag = 16
             query = reverse_complement(query, inplace=False)
-            coordinates = np.array(coordinates)
+            coordinates = numpy.array(coordinates)
             coordinates[:, 1] = qSize - coordinates[:, 1]
             hard_clip_left, hard_clip_right = hard_clip_right, hard_clip_left
         try:
@@ -338,11 +338,11 @@ class AlignmentWriter(interfaces.AlignmentWriter):
                 elif isinstance(value, bytes):
                     datatype = "H"
                     value = "".join(map(str, value))
-                elif isinstance(value, np.array):
+                elif isinstance(value, numpy.array):
                     datatype = "B"
-                    if np.issubdtype(value.dtype, np.integer):
+                    if numpy.issubdtype(value.dtype, numpy.integer):
                         pass
-                    elif np.issubdtype(value.dtype, float):
+                    elif numpy.issubdtype(value.dtype, float):
                         pass
                     else:
                         raise ValueError(
@@ -501,7 +501,7 @@ class AlignmentIterator(interfaces.AlignmentIterator):
                             raise ValueError(
                                 f"Unknown number type '{letter}' in tag '{field}'"
                             )
-                        value = np.array(value, dtype)
+                        value = numpy.array(value, dtype)
                     annotations[tag] = value
             if flag & 0x10:
                 strand = "-"
@@ -694,7 +694,7 @@ class AlignmentIterator(interfaces.AlignmentIterator):
                     index += size
                 target.seq = Seq(data, length=length)
             if coordinates is not None:
-                coordinates = np.array(coordinates).transpose()
+                coordinates = numpy.array(coordinates).transpose()
                 if strand == "-":
                     coordinates[1, :] = query_pos - coordinates[1, :]
             if query == "*":

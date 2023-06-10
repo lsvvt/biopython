@@ -43,7 +43,8 @@ class AlignmentWriter(interfaces.AlignmentWriter):
 
     fmt = "MAF"
 
-    def _write_trackline(self, stream, metadata):
+    def _write_trackline(self, metadata):
+        stream = self.stream
         stream.write("track")
         for key, value in metadata.items():
             if key in ("name", "description", "frames"):
@@ -68,8 +69,9 @@ class AlignmentWriter(interfaces.AlignmentWriter):
             stream.write(f" {key}={value}")
         stream.write("\n")
 
-    def write_header(self, stream, alignments):
+    def write_header(self, alignments):
         """Write the MAF header."""
+        stream = self.stream
         try:
             metadata = alignments.metadata
         except AttributeError:
@@ -84,7 +86,7 @@ class AlignmentWriter(interfaces.AlignmentWriter):
         )
         for key in track_keys:
             if key in metadata:
-                self._write_trackline(stream, metadata)
+                self._write_trackline(metadata)
                 break
         stream.write("##maf")
         for key, value in metadata.items():

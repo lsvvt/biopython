@@ -4,6 +4,7 @@
 # as part of this package.
 """Tests for Align.sam module."""
 import unittest
+import warnings
 from io import StringIO
 
 

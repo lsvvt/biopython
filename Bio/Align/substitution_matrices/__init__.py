@@ -9,10 +9,10 @@
 
 import os
 import string
-import numpy as np
+import numpy
 
 
-class Array(np.ndarray):
+class Array(numpy.ndarray):
     """numpy array subclass indexed by integers and by letters."""
 
     def __new__(cls, alphabet=None, dims=None, data=None, dtype=float):
@@ -143,7 +143,7 @@ class Array(np.ndarray):
 
     def __getitem__(self, key):
         key = self._convert_key(key)
-        value = np.ndarray.__getitem__(self, key)
+        value = numpy.ndarray.__getitem__(self, key)
         if value.ndim == 2:
             if self.ndim == 2:
                 if value.shape != self.shape:
@@ -163,7 +163,7 @@ class Array(np.ndarray):
 
     def __setitem__(self, key, value):
         key = self._convert_key(key)
-        np.ndarray.__setitem__(self, key, value)
+        numpy.ndarray.__setitem__(self, key, value)
 
     def __contains__(self, key):
         # Follow dict definition of __contains__
@@ -177,12 +177,12 @@ class Array(np.ndarray):
             if isinstance(arg, Array):
                 if arg.alphabet != alphabet:
                     raise ValueError("alphabets are inconsistent")
-        return np.ndarray.__array_prepare__(self, out_arr, context)
+        return numpy.ndarray.__array_prepare__(self, out_arr, context)
 
     def __array_wrap__(self, out_arr, context=None):
         if len(out_arr) == 1:
             return out_arr[0]
-        return np.ndarray.__array_wrap__(self, out_arr, context)
+        return numpy.ndarray.__array_wrap__(self, out_arr, context)
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
         args = []
@@ -191,7 +191,7 @@ class Array(np.ndarray):
             if isinstance(arg, Array):
                 if arg.alphabet != alphabet:
                     raise ValueError("alphabets are inconsistent")
-                args.append(arg.view(np.ndarray))
+                args.append(arg.view(numpy.ndarray))
             else:
                 args.append(arg)
 
@@ -202,7 +202,7 @@ class Array(np.ndarray):
                 if isinstance(arg, Array):
                     if arg.alphabet != alphabet:
                         raise ValueError("alphabets are inconsistent")
-                    out_args.append(arg.view(np.ndarray))
+                    out_args.append(arg.view(numpy.ndarray))
                 else:
                     out_args.append(arg)
             kwargs["out"] = tuple(out_args)
@@ -224,7 +224,7 @@ class Array(np.ndarray):
             if raw_result.ndim == 0:
                 result = raw_result
             elif output is None:
-                result = np.asarray(raw_result).view(Array)
+                result = numpy.asarray(raw_result).view(Array)
                 result._alphabet = self._alphabet
             else:
                 result = output
@@ -236,7 +236,7 @@ class Array(np.ndarray):
     def __reduce__(self):
         import pickle
 
-        values = np.array(self)
+        values = numpy.array(self)
         state = pickle.dumps(values)
         alphabet = self._alphabet
         dims = len(self.shape)
@@ -251,7 +251,7 @@ class Array(np.ndarray):
 
     def transpose(self, axes=None):
         """Transpose the array."""
-        other = np.ndarray.transpose(self, axes)
+        other = numpy.ndarray.transpose(self, axes)
         other._alphabet = self._alphabet
         return other
 
@@ -277,13 +277,13 @@ class Array(np.ndarray):
         dims = len(self.shape)
         if dims == 1:
             for index, key in enumerate(self._alphabet):
-                value = np.ndarray.__getitem__(self, index)
+                value = numpy.ndarray.__getitem__(self, index)
                 yield key, value
         elif dims == 2:
             for i1, c1 in enumerate(self._alphabet):
                 for i2, c2 in enumerate(self._alphabet):
                     key = (c1, c2)
-                    value = np.ndarray.__getitem__(self, (i1, i2))
+                    value = numpy.ndarray.__getitem__(self, (i1, i2))
                     yield key, value
         else:
             raise RuntimeError("array has unexpected shape %s" % self.shape)
@@ -308,7 +308,7 @@ class Array(np.ndarray):
         elif dims == 2:
             n1, n2 = self.shape
             return tuple(
-                np.ndarray.__getitem__(self, (i1, i2))
+                numpy.ndarray.__getitem__(self, (i1, i2))
                 for i2 in range(n2)
                 for i1 in range(n1)
             )
@@ -342,9 +342,9 @@ class Array(np.ndarray):
             jj.append(j)
         dims = len(self.shape)
         a = Array(alphabet, dims=dims)
-        ii = np.ix_(*[ii] * dims)
-        jj = np.ix_(*[jj] * dims)
-        a[ii] = np.ndarray.__getitem__(self, jj)
+        ii = numpy.ix_(*[ii] * dims)
+        jj = numpy.ix_(*[jj] * dims)
+        a[ii] = numpy.ndarray.__getitem__(self, jj)
         return a
 
     def _format_1D(self, fmt):
@@ -427,7 +427,7 @@ class Array(np.ndarray):
 
         """
         if fmt == "":
-            if np.issubdtype(self.dtype, np.integer):
+            if numpy.issubdtype(self.dtype, numpy.integer):
                 fmt = "%i"
             else:
                 fmt = "%.1f"
@@ -443,7 +443,7 @@ class Array(np.ndarray):
         return self.format()
 
     def __repr__(self):
-        text = np.ndarray.__repr__(self)
+        text = numpy.ndarray.__repr__(self)
         alphabet = self._alphabet
         if isinstance(alphabet, str):
             assert text.endswith(")")

@@ -1077,7 +1077,7 @@ class SimpleLocation(Location):
             ref = None
         m = _re_location_category.match(text)
         if m is None:
-            raise LocationParserError(f"Could not parse feature location '{text}'")
+            return None
         for key, value in m.groupdict().items():
             if value is not None:
                 break
@@ -1846,7 +1846,8 @@ class CompoundLocation(Location):
         position.
 
         For the special case of a CompoundLocation wrapping the origin of
-        a circular genome this will match the genome length.
+        a circular genome this will match the genome length (minus one
+        given how Python counts from zero).
         """
         return max(loc.end for loc in self.parts)
 

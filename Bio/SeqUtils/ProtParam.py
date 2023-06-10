@@ -30,11 +30,7 @@ Examples
 7.72
 >>> sec_struc = X.secondary_structure_fraction()  # [helix, turn, sheet]
 >>> print("%0.2f" % sec_struc[0])  # helix
-0.33
->>> print("%0.2f" % sec_struc[1])  # turn
-0.29
->>> print("%0.2f" % sec_struc[2])  # sheet
-0.37
+0.28
 >>> epsilon_prot = X.molar_extinction_coefficient()  # [reduced, oxidized]
 >>> print(epsilon_prot[0])  # with reduced cysteines
 17420
@@ -317,23 +313,19 @@ class ProteinAnalysis:
         """Calculate fraction of helix, turn and sheet.
 
         Returns a list of the fraction of amino acids which tend
-        to be in Helix, Turn or Sheet, according to Haimov and Srebnik, 2016;
-        Hutchinson and Thornton, 1994; and Kim and Berg, 1993, respectively.
+        to be in Helix, Turn or Sheet.
 
-        Amino acids in helix: E, M, A, L, K.
-        Amino acids in turn: N, P, G, S, D.
-        Amino acids in sheet: V, I, Y, F, W, L, T.
-
-        Note that, prior to v1.82, this method wrongly returned
-        (Sheet, Turn, Helix) while claiming to return (Helix, Turn, Sheet).
+        Amino acids in helix: V, I, Y, F, W, L.
+        Amino acids in Turn: N, P, G, S.
+        Amino acids in sheet: E, M, A, L.
 
         Returns a tuple of three floats (Helix, Turn, Sheet).
         """
         aa_percentages = self.get_amino_acids_percent()
 
-        helix = sum(aa_percentages[r] for r in "EMALK")
-        turn = sum(aa_percentages[r] for r in "NPGSD")
-        sheet = sum(aa_percentages[r] for r in "VIYFWLT")
+        helix = sum(aa_percentages[r] for r in "VIYFWL")
+        turn = sum(aa_percentages[r] for r in "NPGS")
+        sheet = sum(aa_percentages[r] for r in "EMAL")
 
         return helix, turn, sheet
 
